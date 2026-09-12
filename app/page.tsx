@@ -236,11 +236,12 @@ export default function Home() {
       {showEventDetails && (
         <section className="event-details" aria-live="polite">
           <h2>Meet NMDP at UC Berkeley</h2>
-          <p>Monday, September 21 · 10 AM – 12 PM PT</p>
+          <p className="event-time"><span>Monday, September 21</span><span>10 AM – 12 PM PT</span></p>
           {clickedQuestions.length >= 4 && (
             <div className="story-block address-block">
               <a href="https://maps.app.goo.gl/jtfTYBeFNQ23sQP77" target="_blank" rel="noreferrer">
                 Outside the Amazon Hub Locker<br />2495 Bancroft Way, Berkeley, CA 94720
+                <small>Open in Google Maps ↗</small>
               </a>
             </div>
           )}

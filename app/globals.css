@@ -67,10 +67,10 @@ body { font-family: Arial, Helvetica, sans-serif; }
 .glass-message {
   position: absolute; bottom: 124px; left: 50%; z-index: 6;
   width: max-content; max-width: calc(100% - 44px); padding: 9px 13px;
-  border: 0; border-radius: 9px; background: rgba(246,248,251,.26);
+  border: 0; border-radius: 9px; background: rgba(246,248,251,.78);
   box-shadow: 0 5px 18px rgba(35,61,105,.035);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   transform: translateX(-50%);
   animation: glass-in 520ms cubic-bezier(.22,1,.36,1) both;
 }
@@ -89,8 +89,8 @@ body { font-family: Arial, Helvetica, sans-serif; }
 }
 .awareness-message p > span {
   display: block; width: max-content; max-width: 100%; margin-left: auto;
-  padding: 1px 4px; background: rgba(246,248,251,.18); border-radius: 4px;
-  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  padding: 1px 4px; background: rgba(246,248,251,.68); border-radius: 4px;
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
 }
 .awareness-message .awareness-first {
   display: flex; align-items: baseline; justify-content: flex-end; gap: 9px;
@@ -107,40 +107,47 @@ body { font-family: Arial, Helvetica, sans-serif; }
 }
 .event-details h2 {
   display: table; max-width: 100%; margin: 0 0 7px; padding: 4px 6px;
-  border-radius: 5px; background: rgba(246,248,251,.62);
-  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-radius: 5px; background: rgba(246,248,251,.82);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
   font-size: 20px; font-weight: 500; letter-spacing: -.025em; line-height: 1.08;
 }
 .event-details > p {
   display: table; max-width: 100%; margin: 0; padding: 4px 6px;
-  border-radius: 5px; background: rgba(246,248,251,.62);
-  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-  font-size: 14px; font-weight: 500; letter-spacing: -.01em;
+  border-radius: 5px; background: rgba(246,248,251,.82);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  color: var(--blue); font-size: 17px; font-weight: 600; letter-spacing: -.02em;
   line-height: 1.35; text-transform: none;
 }
+.event-time span { display: block; }
 .story-block { margin-top: 19px; font-size: 12px; line-height: 1.35; }
 .story-block a, .story-block p span {
-  color: #20242a; background: rgba(246,248,251,.6);
-  -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
+  color: #20242a; background: rgba(246,248,251,.8);
+  -webkit-backdrop-filter: blur(13px); backdrop-filter: blur(13px);
   box-decoration-break: clone; -webkit-box-decoration-break: clone;
 }
 .story-block p { margin: 0 0 13px; }
 .story-block p span { padding: 3px 5px; }
 .address-block a {
   display: inline-block; padding: 5px 6px; border-radius: 5px;
-  font-size: 13px; font-weight: 500; text-decoration-color: rgba(32,36,42,.35);
+  font-size: 13px; font-weight: 500; text-decoration-thickness: 1px;
+  text-decoration-color: rgba(32,36,42,.55);
   text-underline-offset: 3px;
 }
-.facts-block { font-size: 11px; max-width: 290px; }
+.address-block small {
+  display: block; margin-top: 7px; color: var(--blue); font-size: 10px;
+  font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+}
+.volunteer-block, .facts-block { font-size: 12px; max-width: 290px; }
 .registry-link {
-  display: inline-block; margin-top: 3px; padding: 8px 11px !important;
-  border-radius: 999px; color: var(--blue) !important; font-size: 13px;
-  font-weight: 600; text-decoration: none;
+  display: inline-block; margin-top: 3px; padding: 9px 13px !important;
+  border-radius: 999px; color: #263000 !important; background: #bdcc2a !important;
+  box-shadow: 0 6px 18px rgba(127,141,19,.2); font-size: 13px;
+  font-weight: 700; text-decoration: none;
 }
 .share-poster {
   position: absolute; bottom: 20px; left: 50%; z-index: 7; padding: 4px 8px;
   border: 0; background: rgba(246,248,251,.42); color: #4d5560;
-  font-size: 10px; letter-spacing: .08em; transform: translateX(-50%); cursor: pointer;
+  font-size: 13px; letter-spacing: .06em; transform: translateX(-50%); cursor: pointer;
   -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
 }
 @keyframes question-hop {
