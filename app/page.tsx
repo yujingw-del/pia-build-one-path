@@ -146,30 +146,30 @@ export default function Home() {
   };
 
   const downloadPoster = async () => {
+    const source = canvasRef.current;
+    if (!source) return;
     const poster = document.createElement("canvas");
     poster.width = 1080;
-    poster.height = 1350;
+    const scale = poster.width / source.clientWidth;
+    poster.height = Math.round(source.clientHeight * scale);
     const context = poster.getContext("2d");
     if (!context) return;
     await document.fonts.ready;
     context.fillStyle = "#f6f8fb";
     context.fillRect(0, 0, poster.width, poster.height);
     context.fillStyle = "#c9d1dc";
-    for (let y = 24; y < poster.height; y += 30) for (let x = 24; x < poster.width; x += 30) {
-      context.beginPath(); context.arc(x, y, 2, 0, Math.PI * 2); context.fill();
+    for (let y = 0; y < poster.height; y += 24 * scale) for (let x = 0; x < poster.width; x += 24 * scale) {
+      context.beginPath(); context.arc(x, y, 1.35 * scale, 0, Math.PI * 2); context.fill();
     }
-    const source = canvasRef.current;
-    if (source && pointsRef.current.length > 1) {
-      const sx = poster.width / source.clientWidth;
-      const sy = poster.height / source.clientHeight;
-      const path = pointsRef.current.map((point) => ({ x: point.x * sx, y: point.y * sy }));
+    if (pointsRef.current.length > 1) {
+      const path = pointsRef.current.map((point) => ({ x: point.x * scale, y: point.y * scale }));
       context.beginPath(); context.moveTo(path[0].x, path[0].y);
       for (let index = 1; index < path.length - 1; index += 1) {
         const point = path[index], next = path[index + 1];
         context.quadraticCurveTo(point.x, point.y, (point.x + next.x) / 2, (point.y + next.y) / 2);
       }
       const last = path[path.length - 1]; context.lineTo(last.x, last.y);
-      context.strokeStyle = "#165dff"; context.lineWidth = 6; context.lineCap = "round"; context.lineJoin = "round"; context.stroke();
+      context.strokeStyle = "#165dff"; context.lineWidth = 2.25 * scale; context.lineCap = "round"; context.lineJoin = "round"; context.stroke();
     }
     const drawLines = (text: string, x: number, y: number, width: number, lineHeight: number) => {
       let line = ""; let row = y;
@@ -180,17 +180,23 @@ export default function Home() {
       }
       context.fillText(line, x, row); return row + lineHeight;
     };
-    context.textAlign = "right"; context.fillStyle = "#cb2e25"; context.font = "500 78px Arial";
-    ["BLOOD CANCER &", "PEDIATRIC CANCER", "AWARENESS MONTH"].forEach((line, index) => context.fillText(line, 1020, 120 + index * 72));
-    context.textAlign = "left"; context.fillStyle = "#cb2e25"; context.font = "italic 28px Georgia"; context.fillText("September", 470, 74);
-    let y = 540; context.fillStyle = "#20242a"; context.font = "500 42px Arial"; context.fillText("Meet NMDP at UC Berkeley", 64, y);
-    y += 60; context.fillStyle = "#165dff"; context.font = "600 34px Arial"; context.fillText("Monday, September 21", 64, y); context.fillText("10 AM – 12 PM PT", 64, y + 42);
-    y += 115; context.fillStyle = "#20242a"; context.font = "500 26px Arial"; context.fillText("Outside the Amazon Hub Locker", 64, y); context.fillText("2495 Bancroft Way, Berkeley, CA 94720", 64, y + 34);
-    y += 105; context.font = "400 23px Arial"; y = drawLines("Berkeley MDes students will be onsite volunteering and sharing more information about how to join the NMDP Registry.", 64, y, 720, 31);
-    y += 22; y = drawLines("Approximately every 3–4 minutes, someone in the U.S. is diagnosed with a blood cancer or disorder.", 64, y, 720, 31);
-    y += 22; drawLines("Healthy blood stem cells can help replace damaged cells and restore a patient’s blood and immune systems.", 64, y, 720, 31);
-    context.fillStyle = "#bdcc2a"; context.fillRect(64, 1245, 250, 8);
-    context.fillStyle = "#20242a"; context.font = "600 24px Arial"; context.fillText("Join the NMDP Registry", 64, 1228);
+    const px = (value: number) => value * scale;
+    const right = poster.width - px(22), titleTop = px(54);
+    context.textAlign = "right"; context.fillStyle = "#cb2e25"; context.font = `500 ${px(38)}px Arial`;
+    const titleLines = ["BLOOD CANCER &", "PEDIATRIC CANCER", "AWARENESS MONTH"];
+    titleLines.forEach((line, index) => context.fillText(line, right, titleTop + px(38 + index * 34)));
+    const firstLineWidth = context.measureText(titleLines[0]).width;
+    context.textAlign = "left"; context.font = `italic ${px(12)}px Georgia`;
+    context.fillText("September", Math.max(px(22), right - firstLineWidth - px(78)), titleTop + px(30));
+    let y = source.clientHeight * .42 * scale;
+    context.fillStyle = "#20242a"; context.font = `500 ${px(20)}px Arial`; context.fillText("Meet NMDP at UC Berkeley", px(22), y);
+    y += px(33); context.fillStyle = "#165dff"; context.font = `600 ${px(17)}px Arial`; context.fillText("Monday, September 21", px(22), y); context.fillText("10 AM – 12 PM PT", px(22), y + px(22));
+    y += px(66); context.fillStyle = "#20242a"; context.font = `500 ${px(13)}px Arial`; context.fillText("Outside the Amazon Hub Locker", px(22), y); context.fillText("2495 Bancroft Way, Berkeley, CA 94720", px(22), y + px(18));
+    y += px(54); context.font = `400 ${px(12)}px Arial`; y = drawLines("Berkeley MDes students will be onsite volunteering and sharing more information about how to join the NMDP Registry.", px(22), y, px(310), px(16));
+    y += px(10); y = drawLines("Approximately every 3–4 minutes, someone in the U.S. is diagnosed with a blood cancer or disorder.", px(22), y, px(310), px(16));
+    y += px(10); y = drawLines("Healthy blood stem cells can help replace damaged cells and restore a patient’s blood and immune systems.", px(22), y, px(310), px(16));
+    y += px(18); context.fillStyle = "#20242a"; context.font = `600 ${px(13)}px Arial`; context.fillText("Join in NMDP registry", px(22), y);
+    context.fillStyle = "#bdcc2a"; context.font = `900 ${px(21)}px Arial`; context.fillText("↗", px(164), y + px(1));
     poster.toBlob((blob) => {
       if (!blob) return;
       const link = document.createElement("a");
@@ -309,7 +315,7 @@ export default function Home() {
               <p><span>Approximately every 3–4 minutes, someone in the U.S. is diagnosed with a blood cancer or disorder.</span></p>
               <p><span>Healthy blood stem cells can help replace damaged cells and restore a patient’s blood and immune systems.</span></p>
               <a className="registry-link" href="https://www.nmdp.org/get-involved/join-the-registry" target="_blank" rel="noreferrer">
-                <span>Join in NMDP registry</span><i aria-hidden="true">→</i>
+                <span>Join in NMDP registry</span><i aria-hidden="true">↗</i>
               </a>
             </div>
           )}
