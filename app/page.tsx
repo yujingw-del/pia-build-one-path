@@ -1,38 +1,18 @@
 "use client";
-import { useEffect,useRef,useState } from "react";
-
-const cells=[
- {x:56,y:11,w:78,h:52,r:-18},{x:70,y:17,w:42,h:58,r:28},{x:49,y:23,w:48,h:38,r:-8},
- {x:63,y:28,w:92,h:82,r:13},{x:76,y:36,w:38,h:55,r:-27},{x:54,y:39,w:54,h:43,r:22},
- {x:45,y:46,w:82,h:59,r:-38},{x:58,y:51,w:41,h:67,r:15},{x:38,y:56,w:46,h:37,r:-12},
- {x:47,y:63,w:96,h:70,r:31},{x:31,y:68,w:42,h:57,r:-27},{x:41,y:74,w:50,h:35,r:8},
- {x:26,y:79,w:82,h:61,r:-18},{x:37,y:86,w:37,h:53,r:25},{x:19,y:91,w:53,h:37,r:-30},
-];
-const reveals=[
- "Most life-saving matches begin between strangers.",
- "NMDP connects patients and potential stem cell donors.",
- "September is Blood Cancer Awareness Month.",
- "Meet NMDP at UC Berkeley.",
-];
-type Drag={from:number;x:number;y:number;ox:number;oy:number}|null;
-
+import {useEffect,useRef,useState} from "react";
+type Blob={x:number;y:number;r:number;vx:number;vy:number;phase:number};
+const info=["Most life-saving matches begin between strangers.","NMDP connects patients with potential stem cell donors.","September is Blood Cancer Awareness Month.","Meet NMDP at UC Berkeley."];
 export default function Home(){
- const[started,setStarted]=useState(false),[found,setFound]=useState(false),[linked,setLinked]=useState<number[]>([]),[drag,setDrag]=useState<Drag>(null),[flash,setFlash]=useState(false);
- const field=useRef<HTMLDivElement>(null);
- useEffect(()=>{if(!drag)return;const move=(e:PointerEvent)=>setDrag(d=>d?{...d,x:e.clientX,y:e.clientY}:null);const up=(e:PointerEvent)=>{const el=document.elementFromPoint(e.clientX,e.clientY)?.closest<HTMLElement>("[data-cell]");const target=el?Number(el.dataset.cell):-1;if(target>=0&&target!==drag.from&&!linked.includes(target)){setLinked(v=>[...v,target]);setFlash(true);setTimeout(()=>setFlash(false),850)}setDrag(null)};window.addEventListener("pointermove",move);window.addEventListener("pointerup",up);return()=>{window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",up)}},[drag,linked]);
- const beginDrag=(e:React.PointerEvent,index:number)=>{if(!found||linked.includes(index))return;e.preventDefault();const rect=e.currentTarget.getBoundingClientRect();setDrag({from:index,x:e.clientX,y:e.clientY,ox:rect.left+rect.width/2,oy:rect.top+rect.height/2})};
- const reset=()=>{setStarted(false);setFound(false);setLinked([]);setDrag(null)};
- return <main className={`experience ${started?"started":""} ${found?"found":""} ${flash?"flash":""}`}>
-  {!started&&<button className="start" onClick={()=>setStarted(true)}><span>Tap to start</span><i/></button>}
-  {started&&<>
-   <div className="prompt" key={`${found}-${linked.length}`}>{!found?"Find YOU":linked.length===0?"Drag YOU to a stranger":"Keep connecting"}</div>
-   <div className="cell-field" ref={field}>
-    {cells.map((c,i)=><button key={i} data-cell={i} aria-label={i===6?"You":`Stranger ${i+1}`} onClick={()=>i===6&&!found&&setFound(true)} onPointerDown={e=>beginDrag(e,i)} className={`cell c${i} ${i===6?"you":""} ${linked.includes(i)?"linked":""}`} style={{left:`${c.x}%`,top:`${c.y}%`,width:c.w,height:c.h,"--r":`${c.r}deg`,"--i":i} as React.CSSProperties}><i/><i/>{i===6&&<b>YOU</b>}</button>)}
-    {linked.map((n,i)=><div key={n} className="bond" style={{"--n":n,"--order":i} as React.CSSProperties}/>) }
-   </div>
-   {drag&&<div className="drag-line" style={{left:drag.ox,top:drag.oy,width:Math.hypot(drag.x-drag.ox,drag.y-drag.oy),rotate:`${Math.atan2(drag.y-drag.oy,drag.x-drag.ox)}rad`}}/>}
-   {linked.length>0&&<section className="reveal" key={linked.length}><small>CONNECTION {String(linked.length).padStart(2,"0")}</small><p>{reveals[Math.min(linked.length-1,reveals.length-1)]}</p></section>}
-   {linked.length>0&&<button className="reset" onClick={reset}>Start again ↺</button>}
-  </>}
- </main>
+ const canvas=useRef<HTMLCanvasElement>(null),blobs=useRef<Blob[]>([]),drag=useRef<{from:number,x:number,y:number}|null>(null),startedRef=useRef(false);
+ const[started,setStarted]=useState(false),[found,setFound]=useState(false),[count,setCount]=useState(0),[dragging,setDragging]=useState(false);
+ useEffect(()=>{startedRef.current=started},[started]);
+ useEffect(()=>{const cvs=canvas.current;if(!cvs)return;const ctx=cvs.getContext("2d");if(!ctx)return;let raf=0,w=0,h=0,dpr=1,t=0;const resize=()=>{const b=cvs.getBoundingClientRect();w=b.width;h=b.height;dpr=Math.min(devicePixelRatio||1,2);cvs.width=w*dpr;cvs.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);if(!blobs.current.length)blobs.current=Array.from({length:18},(_,i)=>{const p=i/17;return{x:w*(.76-p*.52+Math.sin(i*1.8)*.07),y:h*(.08+p*.82),r:14+(i*17)%27,vx:(i%2?1:-1)*.08,vy:(i%3-1)*.05,phase:i*.8}})};resize();addEventListener("resize",resize);
+ const organic=(b:Blob,i:number)=>{const pulse=1+Math.sin(t*.018+b.phase)*.07,rr=b.r*pulse;ctx.beginPath();for(let k=0;k<24;k++){const a=k/24*Math.PI*2,warp=1+Math.sin(a*3+b.phase+t*.009)*.09+Math.cos(a*2-b.phase)*.05,x=b.x+Math.cos(a)*rr*warp,y=b.y+Math.sin(a)*rr*(.82+Math.sin(b.phase)*.12)*warp;k?ctx.lineTo(x,y):ctx.moveTo(x,y)}ctx.closePath();const g=ctx.createRadialGradient(b.x-rr*.3,b.y-rr*.35,2,b.x,b.y,rr*1.2);g.addColorStop(0,i===7?"rgba(189,204,42,.78)":"rgba(163,184,255,.9)");g.addColorStop(.64,"rgba(113,139,233,.82)");g.addColorStop(1,"rgba(73,99,205,.9)");ctx.fillStyle=g;ctx.fill()};
+ const draw=()=>{ctx.clearRect(0,0,w,h);if(startedRef.current){ctx.save();ctx.globalCompositeOperation="source-over";blobs.current.forEach((b,i)=>{b.x+=b.vx;b.y+=b.vy;if(b.x<10||b.x>w-10)b.vx*=-1;if(b.y<10||b.y>h-10)b.vy*=-1;organic(b,i)});if(drag.current){const a=blobs.current[drag.current.from];ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(drag.current.x,drag.current.y);ctx.lineCap="round";ctx.lineWidth=Math.max(11,a.r*.58);const g=ctx.createLinearGradient(a.x,a.y,drag.current.x,drag.current.y);g.addColorStop(0,"rgba(90,119,225,.92)");g.addColorStop(1,"rgba(189,204,42,.78)");ctx.strokeStyle=g;ctx.stroke();ctx.beginPath();ctx.arc(drag.current.x,drag.current.y,12,0,Math.PI*2);ctx.fillStyle="rgba(189,204,42,.8)";ctx.fill()}ctx.restore()}t++;raf=requestAnimationFrame(draw)};draw();return()=>{cancelAnimationFrame(raf);removeEventListener("resize",resize)}},[]);
+ const point=(e:React.PointerEvent)=>{const r=canvas.current!.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}};
+ const down=(e:React.PointerEvent)=>{if(!started)return;const p=point(e),bs=blobs.current;let hit=-1,best=1e9;bs.forEach((b,i)=>{const d=Math.hypot(p.x-b.x,p.y-b.y);if(d<b.r+12&&d<best){hit=i;best=d}});if(hit===7&&!found){setFound(true);return}if(found&&hit>=0){drag.current={from:hit,...p};setDragging(true);canvas.current?.setPointerCapture(e.pointerId)}};
+ const move=(e:React.PointerEvent)=>{if(drag.current)Object.assign(drag.current,point(e))};
+ const up=(e:React.PointerEvent)=>{if(!drag.current)return;const p=point(e),from=drag.current.from,target=blobs.current.findIndex((b,i)=>i!==from&&Math.hypot(p.x-b.x,p.y-b.y)<b.r+20);if(target>=0){const a=blobs.current[from],b=blobs.current[target];b.x=(a.x+b.x)/2;b.y=(a.y+b.y)/2;b.r=Math.min(48,Math.sqrt(a.r*a.r+b.r*b.r));a.x=b.x-8;a.y=b.y+5;a.r*=.72;setCount(c=>Math.min(c+1,info.length))}drag.current=null;setDragging(false)};
+ const reset=()=>{blobs.current=[];setStarted(false);setFound(false);setCount(0)};
+ return <main className="liquid"><canvas ref={canvas} onPointerDown={down} onPointerMove={move} onPointerUp={up} className={dragging?"dragging":""}/>{!started?<button className="start" onClick={()=>setStarted(true)}>Tap to start<i/></button>:<><p className="guide">{!found?"Find YOU":count?"Connect again":"Drag YOU to someone"}</p>{!found&&<span className="you-label">YOU</span>}{count>0&&<section className="reveal" key={count}><small>CONNECTION {String(count).padStart(2,"0")}</small><p>{info[count-1]}</p></section>}<button className="reset" onClick={reset}>↺</button></>}</main>
 }
