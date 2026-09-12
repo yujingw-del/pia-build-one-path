@@ -132,8 +132,20 @@ export default function Home() {
     setShowEventDetails(true);
   };
 
-  const advanceFromBlank = () => {
+  const advanceFromPath = (event: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isComplete) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const click = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+    const distanceToSegment = (point: Point, start: Point, end: Point) => {
+      const dx = end.x - start.x;
+      const dy = end.y - start.y;
+      const lengthSquared = dx * dx + dy * dy;
+      const amount = lengthSquared === 0 ? 0 : Math.max(0, Math.min(1, ((point.x - start.x) * dx + (point.y - start.y) * dy) / lengthSquared));
+      return Math.hypot(point.x - (start.x + amount * dx), point.y - (start.y + amount * dy));
+    };
+    const path = pointsRef.current;
+    const touchedPath = path.slice(1).some((point, index) => distanceToSegment(click, path[index], point) <= 20);
+    if (!touchedPath) return;
     const nextQuestion = [1, 2, 3, 4, 5, 6].find((index) => !clickedQuestions.includes(index));
     if (nextQuestion !== undefined) chooseQuestion(nextQuestion);
   };
@@ -234,7 +246,7 @@ export default function Home() {
         onPointerLeave={(event) => event.pointerType === "mouse" && finishPath()}
         onPointerUp={finishPath}
         onPointerCancel={finishPath}
-        onClick={advanceFromBlank}
+        onClick={advanceFromPath}
       />
       {isComplete && markers.length === 8 && (
         <div className="path-markers" aria-label="Donor to patient path">
