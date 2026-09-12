@@ -171,31 +171,55 @@ export default function Home() {
       const last = path[path.length - 1]; context.lineTo(last.x, last.y);
       context.strokeStyle = "#165dff"; context.lineWidth = 2.25 * scale; context.lineCap = "round"; context.lineJoin = "round"; context.stroke();
     }
-    const drawLines = (text: string, x: number, y: number, width: number, lineHeight: number) => {
+    const px = (value: number) => value * scale;
+    const artwork = document.createElement("canvas");
+    artwork.width = poster.width;
+    artwork.height = poster.height;
+    artwork.getContext("2d")?.drawImage(poster, 0, 0);
+    const drawGlassText = (text: string, x: number, y: number, fontSize: number) => {
+      const metrics = context.measureText(text);
+      const textWidth = metrics.width;
+      const startX = context.textAlign === "right" ? x - textWidth : context.textAlign === "center" ? x - textWidth / 2 : x;
+      const padX = px(4.5);
+      const padY = px(3);
+      const top = y - fontSize * .86 - padY;
+      const height = fontSize * 1.12 + padY * 2;
+      context.save();
+      context.beginPath();
+      context.roundRect(startX - padX, top, textWidth + padX * 2, height, px(4));
+      context.clip();
+      context.filter = `blur(${px(7)}px)`;
+      context.drawImage(artwork, 0, 0);
+      context.filter = "none";
+      context.fillStyle = "rgba(246, 248, 251, 0.78)";
+      context.fillRect(startX - padX, top, textWidth + padX * 2, height);
+      context.restore();
+      context.fillText(text, x, y);
+    };
+    const drawLines = (text: string, x: number, y: number, width: number, lineHeight: number, fontSize: number) => {
       let line = ""; let row = y;
       for (const word of text.split(" ")) {
         const test = line ? `${line} ${word}` : word;
-        if (context.measureText(test).width > width && line) { context.fillText(line, x, row); line = word; row += lineHeight; }
+        if (context.measureText(test).width > width && line) { drawGlassText(line, x, row, fontSize); line = word; row += lineHeight; }
         else line = test;
       }
-      context.fillText(line, x, row); return row + lineHeight;
+      drawGlassText(line, x, row, fontSize); return row + lineHeight;
     };
-    const px = (value: number) => value * scale;
     const right = poster.width - px(22), titleTop = px(54);
     context.textAlign = "right"; context.fillStyle = "#cb2e25"; context.font = `500 ${px(38)}px Arial`;
     const titleLines = ["BLOOD CANCER &", "PEDIATRIC CANCER", "AWARENESS MONTH"];
-    titleLines.forEach((line, index) => context.fillText(line, right, titleTop + px(38 + index * 34)));
+    titleLines.forEach((line, index) => drawGlassText(line, right, titleTop + px(38 + index * 34), px(38)));
     const firstLineWidth = context.measureText(titleLines[0]).width;
     context.textAlign = "left"; context.font = `italic ${px(12)}px Georgia`;
-    context.fillText("September", Math.max(px(22), right - firstLineWidth - px(78)), titleTop + px(30));
+    drawGlassText("September", Math.max(px(22), right - firstLineWidth - px(78)), titleTop + px(30), px(12));
     let y = source.clientHeight * .42 * scale;
-    context.fillStyle = "#20242a"; context.font = `500 ${px(20)}px Arial`; context.fillText("Meet NMDP at UC Berkeley", px(22), y);
-    y += px(33); context.fillStyle = "#165dff"; context.font = `600 ${px(17)}px Arial`; context.fillText("Monday, September 21", px(22), y); context.fillText("10 AM – 12 PM PT", px(22), y + px(22));
-    y += px(66); context.fillStyle = "#20242a"; context.font = `500 ${px(13)}px Arial`; context.fillText("Outside the Amazon Hub Locker", px(22), y); context.fillText("2495 Bancroft Way, Berkeley, CA 94720", px(22), y + px(18));
-    y += px(54); context.font = `400 ${px(12)}px Arial`; y = drawLines("Berkeley MDes students will be onsite volunteering and sharing more information about how to join the NMDP Registry.", px(22), y, px(310), px(16));
-    y += px(10); y = drawLines("Approximately every 3–4 minutes, someone in the U.S. is diagnosed with a blood cancer or disorder.", px(22), y, px(310), px(16));
-    y += px(10); y = drawLines("Healthy blood stem cells can help replace damaged cells and restore a patient’s blood and immune systems.", px(22), y, px(310), px(16));
-    y += px(18); context.fillStyle = "#20242a"; context.font = `600 ${px(13)}px Arial`; context.fillText("Join in NMDP registry", px(22), y);
+    context.fillStyle = "#20242a"; context.font = `500 ${px(20)}px Arial`; drawGlassText("Meet NMDP at UC Berkeley", px(22), y, px(20));
+    y += px(33); context.fillStyle = "#165dff"; context.font = `600 ${px(17)}px Arial`; drawGlassText("Monday, September 21", px(22), y, px(17)); drawGlassText("10 AM – 12 PM PT", px(22), y + px(22), px(17));
+    y += px(66); context.fillStyle = "#20242a"; context.font = `500 ${px(13)}px Arial`; drawGlassText("Outside the Amazon Hub Locker", px(22), y, px(13)); drawGlassText("2495 Bancroft Way, Berkeley, CA 94720", px(22), y + px(18), px(13));
+    y += px(54); context.font = `400 ${px(12)}px Arial`; y = drawLines("Berkeley MDes students will be onsite volunteering and sharing more information about how to join the NMDP Registry.", px(22), y, px(310), px(16), px(12));
+    y += px(10); y = drawLines("Approximately every 3–4 minutes, someone in the U.S. is diagnosed with a blood cancer or disorder.", px(22), y, px(310), px(16), px(12));
+    y += px(10); y = drawLines("Healthy blood stem cells can help replace damaged cells and restore a patient’s blood and immune systems.", px(22), y, px(310), px(16), px(12));
+    y += px(18); context.fillStyle = "#20242a"; context.font = `600 ${px(13)}px Arial`; drawGlassText("Join in NMDP registry", px(22), y, px(13));
     context.fillStyle = "#bdcc2a"; context.font = `900 ${px(21)}px Arial`; context.fillText("↗", px(164), y + px(1));
     poster.toBlob((blob) => {
       if (!blob) return;
