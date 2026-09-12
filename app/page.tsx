@@ -19,6 +19,7 @@ export default function Home() {
   const [hasInteracted, setHasInteracted] = useState(false);
   const [clickedQuestions, setClickedQuestions] = useState<number[]>([]);
   const [showAwareness, setShowAwareness] = useState(false);
+  const [showEventDetails, setShowEventDetails] = useState(false);
 
   const paint = useCallback(() => {
     const canvas = canvasRef.current;
@@ -103,6 +104,7 @@ export default function Home() {
       setHasInteracted(false);
       setClickedQuestions([]);
       setShowAwareness(false);
+      setShowEventDetails(false);
       paint();
     }
     if (event.pointerType !== "mouse") {
@@ -140,7 +142,7 @@ export default function Home() {
       return;
     }
     setActiveQuestion(index);
-    setShowAwareness(false);
+    setShowEventDetails(true);
   };
 
   return (
@@ -198,11 +200,17 @@ export default function Home() {
             const outwardX = marker.x - neighbor.x;
             const outwardY = marker.y - neighbor.y;
             const outwardLength = Math.hypot(outwardX, outwardY) || 1;
+            const canvasWidth = canvasRef.current?.clientWidth ?? 480;
+            const canvasHeight = canvasRef.current?.clientHeight ?? 800;
+            const desiredX = marker.x + (outwardX / outwardLength) * 30;
+            const desiredY = marker.y + (outwardY / outwardLength) * 30;
+            const safeX = Math.min(canvasWidth - 42, Math.max(42, desiredX));
+            const safeY = Math.min(canvasHeight - 22, Math.max(22, desiredY));
             const endpointStyle = {
               left: marker.x,
               top: marker.y,
-              "--endpoint-x": `${(outwardX / outwardLength) * 30}px`,
-              "--endpoint-y": `${(outwardY / outwardLength) * 30}px`,
+              "--endpoint-x": `${safeX - marker.x}px`,
+              "--endpoint-y": `${safeY - marker.y}px`,
             } as CSSProperties;
             return (
               <span className="path-marker endpoint" key={label} style={endpointStyle}>
@@ -222,8 +230,13 @@ export default function Home() {
       )}
       {showAwareness && (
         <section className="awareness-message" aria-live="polite">
-          <small>September</small>
-          <p><span>Blood Cancer &amp;</span><span>Pediatric Cancer</span><span>Awareness Month</span></p>
+          <p><span className="awareness-first"><small>September</small>Blood Cancer &amp;</span><span>Pediatric Cancer</span><span>Awareness Month</span></p>
+          {showEventDetails && (
+            <div className="event-details">
+              <h2>Meet NMDP at UC Berkeley</h2>
+              <p>Monday, September 21 · 10 AM – 12 PM PT</p>
+            </div>
+          )}
         </section>
       )}
     </main>

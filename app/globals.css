@@ -67,7 +67,7 @@ body { font-family: Arial, Helvetica, sans-serif; }
 .glass-message {
   position: absolute; bottom: 124px; left: 50%; z-index: 6;
   width: max-content; max-width: calc(100% - 44px); padding: 9px 13px;
-  border: 0; border-radius: 9px; background: rgba(246,248,251,.44);
+  border: 0; border-radius: 9px; background: rgba(246,248,251,.26);
   box-shadow: 0 5px 18px rgba(35,61,105,.035);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -79,21 +79,35 @@ body { font-family: Arial, Helvetica, sans-serif; }
   font-weight: 400; letter-spacing: -.025em; line-height: 1.1; white-space: nowrap;
 }
 .awareness-message {
-  position: absolute; top: 54px; right: 22px; z-index: 6; width: min(290px, calc(100% - 44px));
+  position: absolute; top: 54px; right: 22px; z-index: 6; width: min(330px, calc(100% - 44px));
   padding: 12px 14px; color: #cb2e25; text-align: right;
-  background: rgba(246,248,251,.54); border-radius: 10px;
+  background: rgba(246,248,251,.3); border-radius: 10px;
   -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   animation: awareness-in 560ms cubic-bezier(.22,1,.36,1) both;
-}
-.awareness-message small {
-  display: block; margin: 0 3px 4px 0; font-family: Georgia, serif;
-  font-size: 13px; font-style: italic; letter-spacing: .08em;
 }
 .awareness-message p {
   margin: 0; font-size: clamp(27px, 7.5vw, 38px); font-weight: 500;
   letter-spacing: -.055em; line-height: .9; text-transform: uppercase;
 }
 .awareness-message p span { display: block; }
+.awareness-message .awareness-first {
+  display: flex; align-items: baseline; justify-content: flex-end; gap: 9px;
+}
+.awareness-message small {
+  font-family: Georgia, serif; font-size: 12px; font-style: italic;
+  font-weight: 400; letter-spacing: .06em; text-transform: none;
+}
+.event-details {
+  margin-top: 25px; padding-top: 13px; color: #20242a; text-align: left;
+  border-top: 1px solid rgba(32,36,42,.1);
+}
+.event-details h2 {
+  margin: 0 0 6px; font-size: 18px; font-weight: 500; letter-spacing: -.025em; line-height: 1.05;
+}
+.event-details p {
+  margin: 0; font-size: 11px; font-weight: 400; letter-spacing: .01em;
+  line-height: 1.35; text-transform: none;
+}
 @keyframes question-hop {
   0%, 100% { transform: translate(calc(-50% + var(--question-x)), calc(-50% + var(--question-y))); }
   50% { transform: translate(calc(-50% + var(--question-x)), calc(-50% + var(--question-hop-y))); }
