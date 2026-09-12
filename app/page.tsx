@@ -93,20 +93,7 @@ export default function Home() {
   };
 
   const beginPath = (event: React.PointerEvent<HTMLCanvasElement>) => {
-    if (!acceptingPointsRef.current) {
-      acceptingPointsRef.current = true;
-      pointsRef.current = [];
-      setHasPath(false);
-      setIsComplete(false);
-      setMarkers([]);
-      setActiveQuestion(null);
-      setShowLearnMore(false);
-      setHasInteracted(false);
-      setClickedQuestions([]);
-      setShowAwareness(false);
-      setShowEventDetails(false);
-      paint();
-    }
+    if (isComplete) return;
     if (event.pointerType !== "mouse") {
       event.currentTarget.setPointerCapture(event.pointerId);
       pointsRef.current = [];
@@ -143,6 +130,12 @@ export default function Home() {
     }
     setActiveQuestion(index);
     setShowEventDetails(true);
+  };
+
+  const advanceFromBlank = () => {
+    if (!isComplete) return;
+    const nextQuestion = [1, 2, 3, 4, 5, 6].find((index) => !clickedQuestions.includes(index));
+    if (nextQuestion !== undefined) chooseQuestion(nextQuestion);
   };
 
   const downloadPoster = async () => {
@@ -241,6 +234,7 @@ export default function Home() {
         onPointerLeave={(event) => event.pointerType === "mouse" && finishPath()}
         onPointerUp={finishPath}
         onPointerCancel={finishPath}
+        onClick={advanceFromBlank}
       />
       {isComplete && markers.length === 8 && (
         <div className="path-markers" aria-label="Donor to patient path">
