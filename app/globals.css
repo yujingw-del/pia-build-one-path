@@ -139,11 +139,15 @@ body { min-width: 280px; overflow-x: hidden; font-family: Arial, Helvetica, sans
 }
 .volunteer-block, .facts-block { font-size: 12px; max-width: 290px; }
 .registry-link {
-  display: inline-block; margin-top: 3px; padding: 9px 13px !important;
-  border-radius: 999px; color: #263000 !important; background: #bdcc2a !important;
-  box-shadow: 0 6px 18px rgba(127,141,19,.2); font-size: 13px;
-  font-weight: 700; text-decoration: none;
+  display: inline-flex !important; align-items: center; gap: 8px; margin-top: 3px;
+  padding: 4px 5px !important; color: #20242a !important; background: rgba(246,248,251,.8) !important;
+  box-shadow: none; font-size: 13px; font-weight: 600; text-decoration: none;
 }
+.registry-link i {
+  color: #bdcc2a; font-size: 21px; font-style: normal; line-height: 1;
+  transform-origin: center; transition: transform 260ms cubic-bezier(.22,1,.36,1);
+}
+.registry-link:hover i, .registry-link:focus-visible i { transform: translateX(6px) rotate(-45deg); }
 .share-poster {
   position: absolute; bottom: 20px; left: 50%; z-index: 7; padding: 4px 8px;
   border: 0; background: rgba(246,248,251,.42); color: #4d5560;
