@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Find Your Connection — NMDP at UC Berkeley",
-  description: "Discover how a connection between strangers can help save a life, then join NMDP at UC Berkeley.",
+  title: "Build 1 Path — PIA",
+  description: "Draw a quiet blue path across a responsive dot grid.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
