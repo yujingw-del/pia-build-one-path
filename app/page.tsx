@@ -19,7 +19,7 @@ export default function Home() {
     if (!context) return;
     context.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
     const points = pointsRef.current;
-    if (points.length < 2) return;
+    if (points.length < 1) return;
     context.save();
     context.lineWidth = 2.25;
     context.lineCap = "round";
@@ -27,16 +27,23 @@ export default function Home() {
     context.strokeStyle = "#165dff";
     context.shadowColor = "rgba(22, 93, 255, 0.18)";
     context.shadowBlur = 8;
-    context.beginPath();
-    context.moveTo(points[0].x, points[0].y);
-    for (let index = 1; index < points.length - 1; index += 1) {
-      const current = points[index];
-      const next = points[index + 1];
-      context.quadraticCurveTo(current.x, current.y, (current.x + next.x) / 2, (current.y + next.y) / 2);
+    if (points.length > 1) {
+      context.beginPath();
+      context.moveTo(points[0].x, points[0].y);
+      for (let index = 1; index < points.length - 1; index += 1) {
+        const current = points[index];
+        const next = points[index + 1];
+        context.quadraticCurveTo(current.x, current.y, (current.x + next.x) / 2, (current.y + next.y) / 2);
+      }
+      const last = points[points.length - 1];
+      context.lineTo(last.x, last.y);
+      context.stroke();
     }
     const last = points[points.length - 1];
-    context.lineTo(last.x, last.y);
-    context.stroke();
+    context.beginPath();
+    context.arc(last.x, last.y, 4, 0, Math.PI * 2);
+    context.fillStyle = "#165dff";
+    context.fill();
     context.restore();
   }, []);
 
@@ -85,7 +92,7 @@ export default function Home() {
 
   return (
     <main className="path-stage">
-      <h1 className={hasPath ? "is-drawing" : ""}>Build 1 path.</h1>
+      <h1 className={hasPath ? "is-drawing" : ""}>build 1 path.</h1>
       <canvas
         ref={canvasRef}
         aria-label="Move your pointer across the dot grid to build a blue path"
