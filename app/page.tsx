@@ -3,9 +3,11 @@
 import { useEffect, useRef, useState } from "react";
 
 const bubbles = [
-  { x: 15, y: 20, s: 86, d: "-1s" }, { x: 72, y: 17, s: 62, d: "-4s" },
-  { x: 88, y: 42, s: 105, d: "-2s" }, { x: 13, y: 58, s: 55, d: "-5s" },
-  { x: 75, y: 73, s: 78, d: "-3s" }, { x: 31, y: 87, s: 96, d: "-6s" },
+  {x:92,y:5,s:35,d:".1s"},{x:78,y:10,s:58,d:".25s"},{x:91,y:20,s:26,d:".4s"},
+  {x:68,y:23,s:42,d:".55s"},{x:82,y:31,s:72,d:".7s"},{x:57,y:35,s:30,d:".85s"},
+  {x:68,y:44,s:54,d:"1s"},{x:48,y:49,s:37,d:"1.15s"},{x:58,y:58,s:76,d:"1.3s"},
+  {x:38,y:62,s:49,d:"1.45s"},{x:46,y:71,s:28,d:"1.6s"},{x:27,y:75,s:67,d:"1.75s"},
+  {x:35,y:84,s:38,d:"1.9s"},{x:15,y:89,s:56,d:"2.05s"},{x:23,y:97,s:25,d:"2.2s"},
 ];
 
 export default function Home() {
@@ -26,7 +28,6 @@ export default function Home() {
 
   return (
     <main className={`portal step-${step}`}>
-      <div className="texture" aria-hidden="true" />
       <div className="wash" aria-hidden="true" />
 
       <header>
@@ -37,7 +38,7 @@ export default function Home() {
       <section className="field" aria-label="A field of potential connections">
         <div className="bridge" aria-hidden="true" />
         <button className="you bubble" onClick={begin} aria-label="Tap you to begin">
-          <span>YOU</span><i /><i /><i />
+          <span>YOU</span><i /><i /><i /><em>Tap YOU</em>
         </button>
         {bubbles.map((bubble, index) => (
           <button
@@ -52,17 +53,11 @@ export default function Home() {
         <div className="ripples" aria-hidden="true"><i /><i /><i /></div>
       </section>
 
-      <section className="message" key={step} aria-live="polite">
-        {step === 0 && <><p>Begin with one person.</p><h1>Tap “YOU”</h1></>}
-        {step === 1 && <><p>The system is awake.</p><h1>Choose a stranger.</h1></>}
-        {step === 2 && <><p>Connecting...</p><h1>Let them meet.</h1></>}
-        {step === 3 && <><p>A match begins here.</p><h1>Strangers<br/>can save lives.</h1></>}
-      </section>
-
-      <footer>
-        <span className="status"><i /> {step === 0 ? "WAITING" : step === 1 ? "ACTIVE" : step === 2 ? "MATCHING" : "CONNECTED"}</span>
-        {step === 3 ? <button onClick={reset}>Again ↺</button> : <span>{step + 1} / 4</span>}
-      </footer>
+      {step > 0 && <section className="message" key={step} aria-live="polite">
+        {step === 1 && <h1>Choose a stranger.</h1>}
+        {step === 2 && <h1>Connecting...</h1>}
+        {step === 3 && <><p>Most life-saving matches</p><h1>begin between strangers.</h1><button onClick={reset}>Again ↺</button></>}
+      </section>}
     </main>
   );
 }
