@@ -17,6 +17,8 @@ export default function Home() {
   const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
   const [showLearnMore, setShowLearnMore] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const [clickedQuestions, setClickedQuestions] = useState<number[]>([]);
+  const [showAwareness, setShowAwareness] = useState(false);
 
   const paint = useCallback(() => {
     const canvas = canvasRef.current;
@@ -99,6 +101,8 @@ export default function Home() {
       setActiveQuestion(null);
       setShowLearnMore(false);
       setHasInteracted(false);
+      setClickedQuestions([]);
+      setShowAwareness(false);
       paint();
     }
     if (event.pointerType !== "mouse") {
@@ -121,16 +125,22 @@ export default function Home() {
   };
 
   const chooseQuestion = (index: number) => {
+    if (clickedQuestions.includes(index)) return;
     setHasInteracted(true);
-    if (activeQuestion === null) {
+    setClickedQuestions((current) => [...current, index]);
+    if (clickedQuestions.length === 0) {
       setActiveQuestion(index);
       setShowLearnMore(true);
       return;
     }
-    if (activeQuestion !== index) {
+    if (clickedQuestions.length === 1) {
       setActiveQuestion(index);
       setShowLearnMore(false);
+      setShowAwareness(true);
+      return;
     }
+    setActiveQuestion(index);
+    setShowAwareness(false);
   };
 
   return (
@@ -173,7 +183,7 @@ export default function Home() {
               } as CSSProperties;
               return (
                 <button
-                  className="path-marker question"
+                  className={`path-marker question${clickedQuestions.includes(index) ? " is-visited" : ""}`}
                   key={index}
                   style={questionStyle}
                   aria-label={`Question mark ${index}`}
@@ -184,9 +194,19 @@ export default function Home() {
                 </button>
               );
             }
+            const neighbor = index === 0 ? markers[1] : markers[6];
+            const outwardX = marker.x - neighbor.x;
+            const outwardY = marker.y - neighbor.y;
+            const outwardLength = Math.hypot(outwardX, outwardY) || 1;
+            const endpointStyle = {
+              left: marker.x,
+              top: marker.y,
+              "--endpoint-x": `${(outwardX / outwardLength) * 30}px`,
+              "--endpoint-y": `${(outwardY / outwardLength) * 30}px`,
+            } as CSSProperties;
             return (
-              <span className="path-marker endpoint" key={label} style={{ left: marker.x, top: marker.y }}>
-                {label}
+              <span className="path-marker endpoint" key={label} style={endpointStyle}>
+                <span>{label}</span>
               </span>
             );
           })}
@@ -198,6 +218,12 @@ export default function Home() {
       {showLearnMore && (
         <section className="glass-message" aria-live="polite">
           <p>Want to learn more?</p>
+        </section>
+      )}
+      {showAwareness && (
+        <section className="awareness-message" aria-live="polite">
+          <small>September</small>
+          <p><span>Blood Cancer &amp;</span><span>Pediatric Cancer</span><span>Awareness Month</span></p>
         </section>
       )}
     </main>
