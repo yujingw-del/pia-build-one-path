@@ -69,12 +69,26 @@ export default function Home() {
 
   useEffect(() => {
     resize();
+    const campaign = new URLSearchParams(window.location.search);
+    if (campaign.get("utm_medium") === "qr") {
+      window.gtag?.("event", "qr_landing", {
+        campaign_name: campaign.get("utm_campaign") ?? "nmdp_registry",
+        campaign_source: campaign.get("utm_source") ?? "berkeley_poster",
+      });
+    }
     window.addEventListener("resize", resize);
     return () => {
       window.removeEventListener("resize", resize);
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
     };
   }, [resize]);
+
+  const trackRegistryClick = () => {
+    window.gtag?.("event", "registry_click", {
+      link_url: "https://www.nmdp.org/get-involved/join-the-registry",
+      link_text: "Join in NMDP registry",
+    });
+  };
 
   const addPoint = (event: React.PointerEvent<HTMLCanvasElement>) => {
     if (!acceptingPointsRef.current) return;
@@ -345,7 +359,7 @@ export default function Home() {
             <div className="story-block facts-block">
               <p><span>Approximately every 3–4 minutes, someone in the U.S. is diagnosed with a blood cancer or disorder.</span></p>
               <p><span>Healthy blood stem cells can help replace damaged cells and restore a patient’s blood and immune systems.</span></p>
-              <a className="registry-link" href="https://www.nmdp.org/get-involved/join-the-registry" target="_blank" rel="noreferrer">
+              <a className="registry-link" href="https://www.nmdp.org/get-involved/join-the-registry" target="_blank" rel="noreferrer" onClick={trackRegistryClick}>
                 <span>Join in NMDP registry</span><i aria-hidden="true">↗</i>
               </a>
             </div>
