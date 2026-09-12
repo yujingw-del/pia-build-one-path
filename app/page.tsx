@@ -231,12 +231,12 @@ export default function Home() {
       {showAwareness && (
         <section className="awareness-message" aria-live="polite">
           <p><span className="awareness-first"><small>September</small>Blood Cancer &amp;</span><span>Pediatric Cancer</span><span>Awareness Month</span></p>
-          {showEventDetails && (
-            <div className="event-details">
-              <h2>Meet NMDP at UC Berkeley</h2>
-              <p>Monday, September 21 · 10 AM – 12 PM PT</p>
-            </div>
-          )}
+        </section>
+      )}
+      {showEventDetails && (
+        <section className="event-details" aria-live="polite">
+          <h2>Meet NMDP at UC Berkeley</h2>
+          <p>Monday, September 21 · 10 AM – 12 PM PT</p>
         </section>
       )}
     </main>
