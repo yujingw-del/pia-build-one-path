@@ -240,7 +240,17 @@ export default function Home() {
     y += px(10); y = drawLines("Approximately every 3–4 minutes, someone in the U.S. is diagnosed with a blood cancer or disorder.", px(22), y, px(310), px(16), px(12));
     y += px(10); y = drawLines("Healthy blood stem cells can help replace damaged cells and restore a patient’s blood and immune systems.", px(22), y, px(310), px(16), px(12));
     y += px(18); context.fillStyle = "#20242a"; context.font = `600 ${px(13)}px Arial`; drawGlassText("Join in NMDP registry", px(22), y, px(13));
-    context.fillStyle = "#bdcc2a"; context.font = `900 ${px(21)}px Arial`; context.fillText("↗", px(164), y + px(1));
+    context.save();
+    context.translate(px(171), y - px(5));
+    context.rotate(-Math.PI / 4);
+    context.strokeStyle = "#bdcc2a";
+    context.lineWidth = px(2.6);
+    context.lineCap = "square";
+    context.beginPath();
+    context.moveTo(0, 0); context.lineTo(px(17), 0);
+    context.moveTo(px(11), px(-6)); context.lineTo(px(17), 0); context.lineTo(px(11), px(6));
+    context.stroke();
+    context.restore();
     poster.toBlob((blob) => {
       if (!blob) return;
       const link = document.createElement("a");
@@ -346,7 +356,7 @@ export default function Home() {
             <div className="story-block address-block">
               <a href="https://maps.app.goo.gl/jtfTYBeFNQ23sQP77" target="_blank" rel="noreferrer">
                 Outside the Amazon Hub Locker<br />2495 Bancroft Way, Berkeley, CA 94720
-                <small>Open in Google Maps ↗</small>
+                <small>Open in Google Maps <i className="map-arrow" aria-hidden="true" /></small>
               </a>
             </div>
           )}
@@ -360,7 +370,7 @@ export default function Home() {
               <p><span>Approximately every 3–4 minutes, someone in the U.S. is diagnosed with a blood cancer or disorder.</span></p>
               <p><span>Healthy blood stem cells can help replace damaged cells and restore a patient’s blood and immune systems.</span></p>
               <a className="registry-link" href="https://www.nmdp.org/get-involved/join-the-registry" target="_blank" rel="noreferrer" onClick={trackRegistryClick}>
-                <span>Join in NMDP registry</span><i aria-hidden="true">↗</i>
+                <span>Join in NMDP registry</span><i aria-hidden="true" />
               </a>
             </div>
           )}

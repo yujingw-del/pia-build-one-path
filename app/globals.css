@@ -134,8 +134,21 @@ body { min-width: 280px; overflow-x: hidden; font-family: Arial, Helvetica, sans
   text-underline-offset: 3px;
 }
 .address-block small {
-  display: block; margin-top: 7px; color: var(--blue); font-size: 10px;
+  display: flex; align-items: center; gap: 5px; margin-top: 7px; color: var(--blue); font-size: 10px;
   font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+}
+.map-arrow {
+  position: relative; display: inline-block; width: 9px; height: 8px;
+  color: currentColor; transform: rotate(-45deg);
+}
+.map-arrow::before, .registry-link i::before {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%;
+  height: 2px; background: currentColor; transform: translateY(-50%);
+}
+.map-arrow::after, .registry-link i::after {
+  content: ""; position: absolute; right: 0; top: 50%; width: 5px; height: 5px;
+  border-top: 2px solid currentColor; border-right: 2px solid currentColor;
+  transform: translateY(-50%) rotate(45deg);
 }
 .volunteer-block, .facts-block { font-size: 12px; max-width: 290px; }
 .registry-link {
@@ -144,11 +157,13 @@ body { min-width: 280px; overflow-x: hidden; font-family: Arial, Helvetica, sans
   box-shadow: none; font-size: 13px; font-weight: 600; text-decoration: none;
 }
 .registry-link i {
-  color: #bdcc2a; font-size: 23px; font-style: normal; font-weight: 900; line-height: 1;
-  text-shadow: .35px 0 currentColor, -.35px 0 currentColor;
-  transform-origin: center; transition: transform 260ms cubic-bezier(.22,1,.36,1);
+  position: relative; display: inline-block; width: 18px; height: 16px; color: #bdcc2a;
+  transform: rotate(-45deg); transform-origin: center;
+  transition: transform 260ms cubic-bezier(.22,1,.36,1);
 }
-.registry-link:hover i, .registry-link:focus-visible i { transform: translateX(7px) rotate(45deg); }
+.registry-link i::before { height: 3px; }
+.registry-link i::after { width: 8px; height: 8px; border-width: 3px; }
+.registry-link:hover i, .registry-link:focus-visible i { transform: translateX(7px) rotate(0deg); }
 .share-poster {
   position: absolute; bottom: 20px; left: 50%; z-index: 7; padding: 4px 8px;
   border: 0; background: rgba(246,248,251,.42); color: #4d5560;
