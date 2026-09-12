@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 
 type Point = { x: number; y: number };
 const GRID = 24;
@@ -150,11 +150,32 @@ export default function Home() {
           {markers.map((marker, index) => {
             const label = index === 0 ? "DONOR" : index === 7 ? "PATIENT" : "?";
             if (label === "?") {
+              const previous = markers[index - 1];
+              const next = markers[index + 1];
+              const tangentX = next.x - previous.x;
+              const tangentY = next.y - previous.y;
+              const length = Math.hypot(tangentX, tangentY) || 1;
+              let offsetX = (-tangentY / length) * 20;
+              let offsetY = (tangentX / length) * 20;
+              const width = canvasRef.current?.clientWidth ?? 480;
+              const height = canvasRef.current?.clientHeight ?? 800;
+              if (marker.x + offsetX < 24 || marker.x + offsetX > width - 24 || marker.y + offsetY < 24 || marker.y + offsetY > height - 24) {
+                offsetX *= -1;
+                offsetY *= -1;
+              }
+              const questionStyle = {
+                left: marker.x,
+                top: marker.y,
+                animationDelay: `${(index - 1) * 110}ms`,
+                "--question-x": `${offsetX}px`,
+                "--question-y": `${offsetY}px`,
+                "--question-hop-y": `${offsetY - 8}px`,
+              } as CSSProperties;
               return (
                 <button
                   className="path-marker question"
                   key={index}
-                  style={{ left: marker.x, top: marker.y, animationDelay: `${(index - 1) * 110}ms` }}
+                  style={questionStyle}
                   aria-label={`Question mark ${index}`}
                   onPointerDown={(event) => event.stopPropagation()}
                   onClick={() => chooseQuestion(index)}
