@@ -100,22 +100,48 @@ body { font-family: Arial, Helvetica, sans-serif; }
   font-weight: 400; letter-spacing: .06em; text-transform: none;
 }
 .event-details {
-  position: absolute; top: 238px; left: 22px; z-index: 6;
-  width: min(245px, calc(100% - 44px)); color: #20242a; text-align: left;
+  position: absolute; top: 42%; left: 22px; z-index: 6;
+  width: min(310px, calc(100% - 44px)); color: #20242a; text-align: left;
+  pointer-events: auto;
   animation: awareness-in 520ms cubic-bezier(.22,1,.36,1) both;
 }
 .event-details h2 {
-  width: max-content; max-width: 100%; margin: 0 0 5px; padding: 2px 4px;
-  border-radius: 4px; background: rgba(246,248,251,.16);
-  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-  font-size: 18px; font-weight: 500; letter-spacing: -.025em; line-height: 1.05;
+  display: table; max-width: 100%; margin: 0 0 7px; padding: 4px 6px;
+  border-radius: 5px; background: rgba(246,248,251,.62);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  font-size: 20px; font-weight: 500; letter-spacing: -.025em; line-height: 1.08;
 }
-.event-details p {
-  width: max-content; max-width: 100%; margin: 0; padding: 2px 4px;
-  border-radius: 4px; background: rgba(246,248,251,.16);
-  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-  font-size: 11px; font-weight: 400; letter-spacing: .01em;
+.event-details > p {
+  display: table; max-width: 100%; margin: 0; padding: 4px 6px;
+  border-radius: 5px; background: rgba(246,248,251,.62);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  font-size: 14px; font-weight: 500; letter-spacing: -.01em;
   line-height: 1.35; text-transform: none;
+}
+.story-block { margin-top: 19px; font-size: 12px; line-height: 1.35; }
+.story-block a, .story-block p span {
+  color: #20242a; background: rgba(246,248,251,.6);
+  -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.story-block p { margin: 0 0 13px; }
+.story-block p span { padding: 3px 5px; }
+.address-block a {
+  display: inline-block; padding: 5px 6px; border-radius: 5px;
+  font-size: 13px; font-weight: 500; text-decoration-color: rgba(32,36,42,.35);
+  text-underline-offset: 3px;
+}
+.facts-block { font-size: 11px; max-width: 290px; }
+.registry-link {
+  display: inline-block; margin-top: 3px; padding: 8px 11px !important;
+  border-radius: 999px; color: var(--blue) !important; font-size: 13px;
+  font-weight: 600; text-decoration: none;
+}
+.share-poster {
+  position: absolute; bottom: 20px; left: 50%; z-index: 7; padding: 4px 8px;
+  border: 0; background: rgba(246,248,251,.42); color: #4d5560;
+  font-size: 10px; letter-spacing: .08em; transform: translateX(-50%); cursor: pointer;
+  -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
 }
 @keyframes question-hop {
   0%, 100% { transform: translate(calc(-50% + var(--question-x)), calc(-50% + var(--question-y))); }

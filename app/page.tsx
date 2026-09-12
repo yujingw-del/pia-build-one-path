@@ -237,8 +237,30 @@ export default function Home() {
         <section className="event-details" aria-live="polite">
           <h2>Meet NMDP at UC Berkeley</h2>
           <p>Monday, September 21 · 10 AM – 12 PM PT</p>
+          {clickedQuestions.length >= 4 && (
+            <div className="story-block address-block">
+              <a href="https://maps.app.goo.gl/jtfTYBeFNQ23sQP77" target="_blank" rel="noreferrer">
+                Outside the Amazon Hub Locker<br />2495 Bancroft Way, Berkeley, CA 94720
+              </a>
+            </div>
+          )}
+          {clickedQuestions.length >= 5 && (
+            <div className="story-block volunteer-block">
+              <p><span>Berkeley MDes students will be onsite volunteering and sharing more information about how to join the NMDP Registry.</span></p>
+            </div>
+          )}
+          {clickedQuestions.length >= 6 && (
+            <div className="story-block facts-block">
+              <p><span>Approximately every 3–4 minutes, someone in the U.S. is diagnosed with a blood cancer or disorder.</span></p>
+              <p><span>Healthy blood stem cells can help replace damaged cells and restore a patient’s blood and immune systems.</span></p>
+              <a className="registry-link" href="https://www.nmdp.org/get-involved/join-the-registry" target="_blank" rel="noreferrer">
+                Join in NMDP registry
+              </a>
+            </div>
+          )}
         </section>
       )}
+      {clickedQuestions.length >= 6 && <button className="share-poster">Share as poster.</button>}
     </main>
   );
 }
