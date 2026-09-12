@@ -14,6 +14,9 @@ export default function Home() {
   const [hasPath, setHasPath] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [markers, setMarkers] = useState<Point[]>([]);
+  const [activeQuestion, setActiveQuestion] = useState<number | null>(null);
+  const [showLearnMore, setShowLearnMore] = useState(false);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const paint = useCallback(() => {
     const canvas = canvasRef.current;
@@ -93,6 +96,9 @@ export default function Home() {
       setHasPath(false);
       setIsComplete(false);
       setMarkers([]);
+      setActiveQuestion(null);
+      setShowLearnMore(false);
+      setHasInteracted(false);
       paint();
     }
     if (event.pointerType !== "mouse") {
@@ -112,6 +118,19 @@ export default function Home() {
     }));
     setIsComplete(true);
     paint();
+  };
+
+  const chooseQuestion = (index: number) => {
+    setHasInteracted(true);
+    if (activeQuestion === null) {
+      setActiveQuestion(index);
+      setShowLearnMore(true);
+      return;
+    }
+    if (activeQuestion !== index) {
+      setActiveQuestion(index);
+      setShowLearnMore(false);
+    }
   };
 
   return (
@@ -137,6 +156,8 @@ export default function Home() {
                   key={index}
                   style={{ left: marker.x, top: marker.y, animationDelay: `${(index - 1) * 110}ms` }}
                   aria-label={`Question mark ${index}`}
+                  onPointerDown={(event) => event.stopPropagation()}
+                  onClick={() => chooseQuestion(index)}
                 >
                   ?
                 </button>
@@ -150,7 +171,14 @@ export default function Home() {
           })}
         </div>
       )}
-      {isComplete && <p className="path-prompt">Tap a question mark.</p>}
+      {isComplete && !hasInteracted && (
+        <p className="path-prompt"><span>Tap a</span><span>question mark.</span></p>
+      )}
+      {showLearnMore && (
+        <section className="glass-message" aria-live="polite">
+          <p>Want to learn more?</p>
+        </section>
+      )}
     </main>
   );
 }
