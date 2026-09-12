@@ -1,8 +1,68 @@
 "use client";
-import { useEffect,useRef,useState } from "react";
-type Point={x:number;y:number;size:number;color:string;delay:number};
-const points:Point[]=[{x:50,y:45,size:70,color:"#e85b73",delay:0},{x:13,y:18,size:48,color:"#629b78",delay:-2},{x:43,y:14,size:38,color:"#599bc4",delay:-4},{x:78,y:15,size:52,color:"#8770ae",delay:-1},{x:89,y:37,size:43,color:"#da8745",delay:-3},{x:18,y:46,size:43,color:"#714e50",delay:-5},{x:82,y:60,size:55,color:"#4187bc",delay:-2.5},{x:18,y:75,size:53,color:"#bc474b",delay:-1.5},{x:50,y:79,size:42,color:"#d9b93d",delay:-4.5},{x:88,y:84,size:38,color:"#5f9668",delay:-.5},{x:8,y:92,size:34,color:"#d49840",delay:-3.5}];
-const links=[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[1,2],[1,5],[2,3],[3,4],[3,6],[4,6],[5,7],[5,8],[6,8],[6,9],[7,8],[8,9],[7,10]];
-function PaperNetwork({stage,chosen,onPick}:{stage:number;chosen:number|null;onPick:(i:number)=>void}){const ref=useRef<HTMLCanvasElement>(null);useEffect(()=>{const canvas=ref.current;if(!canvas)return;const ctx=canvas.getContext("2d");if(!ctx)return;let raf=0,tick=0;const paint=()=>{const box=canvas.getBoundingClientRect(),dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=box.width*dpr;canvas.height=box.height*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,box.width,box.height);const pos=(i:number)=>({x:points[i].x*box.width/100,y:points[i].y*box.height/100});links.forEach(([a,b],i)=>{const A=pos(a),B=pos(b),active=chosen!==null&&((a===0&&b===chosen)||(b===0&&a===chosen)),bend=((i%4)-1.5)*13;ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.bezierCurveTo(A.x+(B.x-A.x)*.35+bend,A.y+(B.y-A.y)*.2-bend,B.x-(B.x-A.x)*.28+bend,B.y-(B.y-A.y)*.23-bend,B.x,B.y);ctx.strokeStyle=active?"rgba(32,31,27,.9)":stage>=2?"rgba(38,36,31,.10)":"rgba(38,36,31,.22)";ctx.lineWidth=active?1.5:.65;ctx.stroke();if(active&&stage>=2){const t=(tick%150)/150,u=1-t,x=u*u*u*A.x+3*u*u*t*(A.x+(B.x-A.x)*.35+bend)+3*u*t*t*(B.x-(B.x-A.x)*.28+bend)+t*t*t*B.x,y=u*u*u*A.y+3*u*u*t*(A.y+(B.y-A.y)*.2-bend)+3*u*t*t*(B.y-(B.y-A.y)*.23-bend)+t*t*t*B.y;ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fillStyle="#fff";ctx.shadowBlur=14;ctx.shadowColor="#fff";ctx.fill();ctx.shadowBlur=0}});tick++;raf=requestAnimationFrame(paint)};paint();return()=>cancelAnimationFrame(raf)},[stage,chosen]);return <div className={`paper-network s${stage}`}><canvas ref={ref}/>{points.map((p,i)=><button key={i} aria-label={i===0?"Begin with you":`Connect with stranger ${i}`} onClick={()=>onPick(i)} className={`person ${i===0?"self":""} ${(i===0&&stage>0)||i===chosen?"lit":""}`} style={{left:`${p.x}%`,top:`${p.y}%`,width:p.size,height:p.size,"--c":p.color,"--d":`${p.delay}s`} as React.CSSProperties}><i/><i/><b/>{i===0&&<em>YOU</em>}</button>)}</div>}
-const copy=[{kicker:"A small experiment",title:"Find your\nconnection.",body:"Someone you’ve never met could be your match."},{kicker:"You are here",title:"Choose a\nstranger.",body:"Tap any colored circle."},{kicker:"Connection found",title:"A stranger\ncan save a life.",body:"Most matches begin here."},{kicker:"The registry",title:"NMDP makes\nthe connection.",body:"Patients meet potential stem cell donors."},{kicker:"Why it matters",title:"Every 3–4\nminutes.",body:"Someone in the U.S. is diagnosed with a blood cancer or disorder."},{kicker:"One small action",title:"Healthy cells\ncan restore.",body:"Blood. Immunity. Hope."}];
-export default function Home(){const[stage,setStage]=useState(0),[chosen,setChosen]=useState<number|null>(null),[busy,setBusy]=useState(false);const current=copy[Math.min(stage,5)];const pick=(i:number)=>{if(busy)return;if(i===0&&stage===0){setStage(1);return}if(i>0&&stage===1){setChosen(i);setBusy(true);setStage(2);setTimeout(()=>{setStage(3);setBusy(false)},2200)}};const next=()=>{if(stage>=3&&stage<6)setStage(stage+1)};const reset=()=>{setChosen(null);setStage(0)};const save=()=>{const blob=new Blob(["NMDP @ UC Berkeley\nMonday, September 21 · 10 AM–12 PM PT\nOutside the Amazon Hub Locker\n2495 Bancroft Way, Berkeley, CA 94720"],{type:"text/plain"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="nmdp-berkeley.txt";a.click();URL.revokeObjectURL(url)};return <main className={`phone-experience stage-${stage}`}><div className="grain"/><header><strong>NMDP</strong><span>{stage<6?`${String(stage+1).padStart(2,"0")} / 07`:"AN INVITATION"}</span></header>{stage<6?<><PaperNetwork stage={stage} chosen={chosen} onPick={pick}/><section className="words" key={stage} aria-live="polite"><span>{current.kicker}</span><h1>{current.title}</h1><p>{current.body}</p></section>{stage===0&&<button className="prompt" onClick={()=>pick(0)}>Tap “YOU” <span>↗</span></button>}{stage===1&&<p className="prompt instruction">Choose one</p>}{stage>=3&&<button className="prompt" onClick={next}>Continue <span>↓</span></button>}<nav aria-label="Progress">{Array.from({length:7}).map((_,i)=><i key={i} className={i===stage?"on":""}/>)}</nav></>:<section className="final-wrap"><article className="flyer"><div className="flyer-head"><b>NMDP × UC Berkeley</b><span>SEP<br/><strong>21</strong></span></div><div className="constellation"><i/><i/><i/><i/><i/><i/><span/></div><p className="tiny">YOU COULD BE SOMEONE’S MATCH</p><h2>Find your<br/>connection.</h2><div className="when"><p><small>MONDAY</small>September 21<br/><b>10 AM—12 PM PT</b></p><p><small>MEET US</small>Outside Amazon Hub Locker<br/>2495 Bancroft Way, Berkeley</p></div><p className="footnote">Meet Berkeley MDes students and learn how to join the NMDP Registry.</p></article><div className="actions"><button onClick={save}>Save event <span>↓</span></button><a href="https://www.nmdp.org/get-involved/join-the-registry" target="_blank" rel="noreferrer">Visit NMDP <span>↗</span></a></div><button className="again" onClick={reset}>↺ Start again</button></section>}</main>}
+
+import { useEffect, useRef, useState } from "react";
+
+const bubbles = [
+  { x: 15, y: 20, s: 86, d: "-1s" }, { x: 72, y: 17, s: 62, d: "-4s" },
+  { x: 88, y: 42, s: 105, d: "-2s" }, { x: 13, y: 58, s: 55, d: "-5s" },
+  { x: 75, y: 73, s: 78, d: "-3s" }, { x: 31, y: 87, s: 96, d: "-6s" },
+];
+
+export default function Home() {
+  const [step, setStep] = useState(0);
+  const [match, setMatch] = useState<number | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+
+  const begin = () => step === 0 && setStep(1);
+  const connect = (index: number) => {
+    if (step !== 1) return;
+    setMatch(index);
+    setStep(2);
+    timer.current = setTimeout(() => setStep(3), 1200);
+  };
+  const reset = () => { setMatch(null); setStep(0); };
+
+  return (
+    <main className={`portal step-${step}`}>
+      <div className="texture" aria-hidden="true" />
+      <div className="wash" aria-hidden="true" />
+
+      <header>
+        <strong>NMDP</strong>
+        <span>A CONNECTION EXPERIMENT</span>
+      </header>
+
+      <section className="field" aria-label="A field of potential connections">
+        <div className="bridge" aria-hidden="true" />
+        <button className="you bubble" onClick={begin} aria-label="Tap you to begin">
+          <span>YOU</span><i /><i /><i />
+        </button>
+        {bubbles.map((bubble, index) => (
+          <button
+            key={index}
+            className={`bubble stranger stranger-${index} ${match === index ? "matched" : ""}`}
+            style={{ left: `${bubble.x}%`, top: `${bubble.y}%`, width: bubble.s, height: bubble.s, "--delay": bubble.d } as React.CSSProperties}
+            onClick={() => connect(index)}
+            aria-label={`Choose stranger ${index + 1}`}
+            disabled={step === 0 || step > 1}
+          ><i /><i /><i /><b /></button>
+        ))}
+        <div className="ripples" aria-hidden="true"><i /><i /><i /></div>
+      </section>
+
+      <section className="message" key={step} aria-live="polite">
+        {step === 0 && <><p>Begin with one person.</p><h1>Tap “YOU”</h1></>}
+        {step === 1 && <><p>The system is awake.</p><h1>Choose a stranger.</h1></>}
+        {step === 2 && <><p>Connecting...</p><h1>Let them meet.</h1></>}
+        {step === 3 && <><p>A match begins here.</p><h1>Strangers<br/>can save lives.</h1></>}
+      </section>
+
+      <footer>
+        <span className="status"><i /> {step === 0 ? "WAITING" : step === 1 ? "ACTIVE" : step === 2 ? "MATCHING" : "CONNECTED"}</span>
+        {step === 3 ? <button onClick={reset}>Again ↺</button> : <span>{step + 1} / 4</span>}
+      </footer>
+    </main>
+  );
+}
