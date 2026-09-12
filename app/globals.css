@@ -227,7 +227,31 @@ body { min-width: 280px; overflow-x: hidden; font-family: Arial, Helvetica, sans
 }
 @media (min-width: 900px) {
   body { padding: 28px; }
-  .path-stage { height: calc(100svh - 56px); border-radius: 30px; }
+  .path-stage {
+    width: min(calc(100vw - 56px), 1180px); height: calc(100svh - 56px);
+    min-height: 680px; border-radius: 30px;
+    background-size: 28px 28px;
+  }
+  .path-stage > h1 { font-size: 25px; }
+  .awareness-message {
+    top: 58px; right: 56px; width: min(520px, 48%);
+  }
+  .awareness-message p { font-size: clamp(42px, 4.4vw, 62px); line-height: .87; }
+  .awareness-message small { font-size: 16px; }
+  .event-details {
+    top: 38%; left: 6%; width: min(500px, 44%);
+  }
+  .event-details h2 { margin-bottom: 10px; font-size: 30px; }
+  .event-details > p { font-size: 24px; line-height: 1.22; }
+  .story-block { margin-top: 24px; font-size: 16px; line-height: 1.38; }
+  .story-block p { margin-bottom: 17px; }
+  .address-block a { font-size: 17px; }
+  .address-block small { margin-top: 9px; font-size: 12px; }
+  .volunteer-block, .facts-block { max-width: 470px; font-size: 16px; }
+  .registry-link { gap: 11px; font-size: 17px; }
+  .registry-link i { width: 23px; height: 20px; }
+  .share-poster { bottom: 24px; font-size: 16px; }
+  .path-prompt { bottom: 38px; font-size: 18px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .path-stage h1 { transition: none; }
