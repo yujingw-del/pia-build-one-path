@@ -13,6 +13,7 @@ export default function Home() {
   const acceptingPointsRef = useRef(true);
   const [hasPath, setHasPath] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [markers, setMarkers] = useState<Point[]>([]);
 
   const paint = useCallback(() => {
     const canvas = canvasRef.current;
@@ -91,6 +92,7 @@ export default function Home() {
       pointsRef.current = [];
       setHasPath(false);
       setIsComplete(false);
+      setMarkers([]);
       paint();
     }
     if (event.pointerType !== "mouse") {
@@ -103,6 +105,11 @@ export default function Home() {
   const finishPath = () => {
     if (!pointsRef.current.length) return;
     acceptingPointsRef.current = false;
+    const points = pointsRef.current;
+    setMarkers(Array.from({ length: 8 }, (_, index) => {
+      const pointIndex = Math.round((index / 7) * (points.length - 1));
+      return points[pointIndex];
+    }));
     setIsComplete(true);
     paint();
   };
@@ -119,6 +126,31 @@ export default function Home() {
         onPointerUp={finishPath}
         onPointerCancel={finishPath}
       />
+      {isComplete && markers.length === 8 && (
+        <div className="path-markers" aria-label="Donor to patient path">
+          {markers.map((marker, index) => {
+            const label = index === 0 ? "DONOR" : index === 7 ? "PATIENT" : "?";
+            if (label === "?") {
+              return (
+                <button
+                  className="path-marker question"
+                  key={index}
+                  style={{ left: marker.x, top: marker.y, animationDelay: `${(index - 1) * 110}ms` }}
+                  aria-label={`Question mark ${index}`}
+                >
+                  ?
+                </button>
+              );
+            }
+            return (
+              <span className="path-marker endpoint" key={label} style={{ left: marker.x, top: marker.y }}>
+                {label}
+              </span>
+            );
+          })}
+        </div>
+      )}
+      {isComplete && <p className="path-prompt">Tap a question mark.</p>}
     </main>
   );
 }
