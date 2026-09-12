@@ -207,11 +207,12 @@ export default function Home() {
     };
     const right = poster.width - px(22), titleTop = px(54);
     context.textAlign = "right"; context.fillStyle = "#cb2e25"; context.font = `500 ${px(38)}px Arial`;
-    const titleLines = ["BLOOD CANCER &", "PEDIATRIC CANCER", "AWARENESS MONTH"];
+    const titleLines = ["BLOOD", "CANCER &", "PEDIATRIC", "CANCER", "AWARENESS", "MONTH"];
     titleLines.forEach((line, index) => drawGlassText(line, right, titleTop + px(38 + index * 34), px(38)));
     const firstLineWidth = context.measureText(titleLines[0]).width;
     context.textAlign = "left"; context.font = `italic ${px(12)}px Georgia`;
-    drawGlassText("September", Math.max(px(22), right - firstLineWidth - px(78)), titleTop + px(30), px(12));
+    const septemberWidth = context.measureText("September").width;
+    drawGlassText("September", Math.max(px(22), right - firstLineWidth - septemberWidth - px(9)), titleTop + px(38), px(12));
     let y = source.clientHeight * .42 * scale;
     context.fillStyle = "#20242a"; context.font = `500 ${px(20)}px Arial`; drawGlassText("Meet NMDP at UC Berkeley", px(22), y, px(20));
     y += px(33); context.fillStyle = "#165dff"; context.font = `600 ${px(17)}px Arial`; drawGlassText("Monday, September 21", px(22), y, px(17)); drawGlassText("10 AM – 12 PM PT", px(22), y + px(22), px(17));
