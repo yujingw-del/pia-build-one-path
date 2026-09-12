@@ -10,7 +10,9 @@ export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pointsRef = useRef<Point[]>([]);
   const frameRef = useRef<number | null>(null);
+  const acceptingPointsRef = useRef(true);
   const [hasPath, setHasPath] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
 
   const paint = useCallback(() => {
     const canvas = canvasRef.current;
@@ -68,6 +70,7 @@ export default function Home() {
   }, [resize]);
 
   const addPoint = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!acceptingPointsRef.current) return;
     if (event.pointerType === "touch" && event.buttons === 0) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const point = {
@@ -82,7 +85,14 @@ export default function Home() {
     frameRef.current = requestAnimationFrame(paint);
   };
 
-  const beginTouchPath = (event: React.PointerEvent<HTMLCanvasElement>) => {
+  const beginPath = (event: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!acceptingPointsRef.current) {
+      acceptingPointsRef.current = true;
+      pointsRef.current = [];
+      setHasPath(false);
+      setIsComplete(false);
+      paint();
+    }
     if (event.pointerType !== "mouse") {
       event.currentTarget.setPointerCapture(event.pointerId);
       pointsRef.current = [];
@@ -90,14 +100,24 @@ export default function Home() {
     }
   };
 
+  const finishPath = () => {
+    if (!pointsRef.current.length) return;
+    acceptingPointsRef.current = false;
+    setIsComplete(true);
+    paint();
+  };
+
   return (
-    <main className="path-stage">
+    <main className={`path-stage${isComplete ? " is-complete" : ""}`}>
       <h1 className={hasPath ? "is-drawing" : ""}>build 1 path.</h1>
       <canvas
         ref={canvasRef}
         aria-label="Move your pointer across the dot grid to build a blue path"
-        onPointerDown={beginTouchPath}
+        onPointerDown={beginPath}
         onPointerMove={addPoint}
+        onPointerLeave={(event) => event.pointerType === "mouse" && finishPath()}
+        onPointerUp={finishPath}
+        onPointerCancel={finishPath}
       />
     </main>
   );
