@@ -126,7 +126,51 @@ export default function Home() {
   const finishPath = () => {
     if (!pointsRef.current.length) return;
     acceptingPointsRef.current = false;
-    const points = pointsRef.current;
+    const canvas = canvasRef.current;
+    let points = [...pointsRef.current];
+
+    // A quick gesture should still create a usable journey. Continue the line
+    // in the direction of the final part of the gesture until it is long enough
+    // for all six questions to have their own space.
+    if (canvas && points.length >= 1) {
+      const last = points.at(-1)!;
+      const anchor = points[Math.max(0, points.length - 4)];
+      let dx = last.x - anchor.x;
+      let dy = last.y - anchor.y;
+      if (Math.hypot(dx, dy) < 2 && points.length > 1) {
+        dx = last.x - points[0].x;
+        dy = last.y - points[0].y;
+      }
+      if (Math.hypot(dx, dy) < 2) dy = 1;
+      const magnitude = Math.hypot(dx, dy) || 1;
+      const stepX = (dx / magnitude) * GRID;
+      const stepY = (dy / magnitude) * GRID;
+      const minimumLength = Math.min(Math.hypot(canvas.clientWidth, canvas.clientHeight) * 0.72, 720);
+      let travelled = points.slice(1).reduce((total, point, index) => total + Math.hypot(point.x - points[index].x, point.y - points[index].y), 0);
+      let cursor = last;
+      while (travelled < minimumLength && points.length < MAX_POINTS) {
+        const next = {
+          x: Math.max(8, Math.min(canvas.clientWidth - 8, cursor.x + stepX)),
+          y: Math.max(8, Math.min(canvas.clientHeight - 8, cursor.y + stepY)),
+        };
+        if (Math.hypot(next.x - cursor.x, next.y - cursor.y) < 4) break;
+        points.push(next);
+        travelled += Math.hypot(next.x - cursor.x, next.y - cursor.y);
+        cursor = next;
+      }
+      cursor = points[0];
+      while (travelled < minimumLength && points.length < MAX_POINTS) {
+        const next = {
+          x: Math.max(8, Math.min(canvas.clientWidth - 8, cursor.x - stepX)),
+          y: Math.max(8, Math.min(canvas.clientHeight - 8, cursor.y - stepY)),
+        };
+        if (Math.hypot(next.x - cursor.x, next.y - cursor.y) < 4) break;
+        points.unshift(next);
+        travelled += Math.hypot(next.x - cursor.x, next.y - cursor.y);
+        cursor = next;
+      }
+      pointsRef.current = points;
+    }
     setMarkers(Array.from({ length: 8 }, (_, index) => {
       const pointIndex = Math.round((index / 7) * (points.length - 1));
       return points[pointIndex];
