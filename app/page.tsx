@@ -313,7 +313,7 @@ export default function Home() {
 
   return (
     <main className={`path-stage${isComplete ? " is-complete" : ""}`}>
-      <h1 className={hasPath ? "is-drawing" : ""}>build 1 path.</h1>
+      <h1 className={hasPath ? "is-drawing" : ""}>draw 1 path.</h1>
       <canvas
         ref={canvasRef}
         aria-label="Move your pointer across the dot grid to build a blue path"
